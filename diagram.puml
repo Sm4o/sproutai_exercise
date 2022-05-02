@@ -1,0 +1,21 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' !define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+' !define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+LAYOUT_WITH_LEGEND()
+
+AddExternalSystemTag("external_api")
+
+Person(user, "Blogger", "Writes blogs for fun")
+System_Boundary(c1, "Core Posts System") {
+    System(api, "Posts API", "Manages blog posts")
+    ContainerDb(db, "Database", "Microsoft SQL", "Holds blog post information", $sprite="msql_server")
+}
+System_Ext(moderation, "Moderation API", "Moderates blog post content for foul language", $tags="external_api")
+
+Rel(user, api, "Uses", "https")
+Rel(api, moderation, "Uses", "https")
+Rel(api, db, "Read/Writes")
+@enduml
