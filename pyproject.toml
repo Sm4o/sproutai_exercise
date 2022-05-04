@@ -6,6 +6,11 @@ authors = ["Samuil Plamenov <samuil.plamenov@harpercollins.co.uk>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+requests = "^2.27.1"
+requests-mock = "^1.9.3"
+Flask = "^2.1.2"
+Flask-RESTful = "^0.3.9"
+python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -1,4 +1,4 @@
-from sprout_ai import __version__
+from api import __version__
 
 
 def test_version():
