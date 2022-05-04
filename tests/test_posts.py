@@ -1,14 +1,26 @@
+import os
 import json
 
 from pytest import fixture
 
 from api.app import app, MODERATION_API_URL
+from init_db import create_database
+
+
+TEST_DATABASE = "database_test.db'"
+
+
+def teardown_database():
+    os.remove(TEST_DATABASE)
 
 
 @fixture
 def client():
+    os.environ['DB_CONNECTION'] = TEST_DATABASE
+    create_database()
     with app.test_client() as client:
         yield client
+    teardown_database()
 
 
 def test_post__clean_language(client, requests_mock):

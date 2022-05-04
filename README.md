@@ -15,7 +15,7 @@ $ curl -X 'POST' \
             "This is the second parapgraph. It contains two more sentences",
             "Third paraphraph here."
         ]
-    }'
+    }'  | jq '.'
 ```
 
 Each sentence is run through a mock moderation ML model:
@@ -27,7 +27,7 @@ $ curl -X 'POST' \
     -H 'Content-Type: application/json' \
     -d '{
         "fragment": "This is a sentence that might contain swear words.",
-    }'
+    }'  | jq '.'
 ```
 Returns: `{"hasFoulLanguage": false }`
 
@@ -48,6 +48,11 @@ To create a virtual environment and install required packages:
 $ poetry install
 ```
 
+Initialize SQLite database first time only:
+```bash
+$ poetry run python init_db.py
+```
+
 To run the backend api:
 
 ``` bash
@@ -55,3 +60,19 @@ $ poetry run flask run
 ```
 
 Then use this url to call the api: http://localhost:5000/ 
+
+
+# Tests
+
+Run them with: 
+```bash
+$ poetry run pytest .
+``` 
+
+For coverage run with:
+```bash
+$ poetry run coverage run --source=api -m pytest -v tests && \
+  poetry run coverage report -m && \
+  poetry run coverage html && \
+  open htmlcov/index.html
+```

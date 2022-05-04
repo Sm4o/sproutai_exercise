@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 import os
-from typing import List
+import json
+from typing import Dict, List
+import sqlite3
 
 from flask import Flask, request
 from flask_restful import Api, Resource
@@ -17,8 +19,25 @@ app.config.from_object(Config())
 api = Api(app)
 
 
-
 MODERATION_API_URL = os.environ.get('MODERATION_API_URL') 
+
+
+class DatabaseInterface:
+    def __init__(self):
+        self.conn = self.get_db_connection() 
+
+    def get_db_connection(self):
+        conn = sqlite3.connect(os.environ.get('DB_CONNECTION'))
+        conn.row_factory = sqlite3.Row
+        return conn
+    
+    def save_post(self, data: Dict[str, str]) -> None: 
+        with self.conn as cursor:
+            cursor.execute(
+                "INSERT INTO posts (title, content, hasFoulLanguage) VALUES (?, ?, ?)",
+                (data['title'], json.dumps(data['paragraphs']), data['hasFoulLanguage'])
+            )
+            cursor.commit()
 
 
 class ModerationAPIUnavailable(Exception):
@@ -64,7 +83,10 @@ class BlogPost(Resource):
         try:
             data['hasFoulLanguage'] = moderation.has_foul_language() 
         except ModerationAPIUnavailable:
+            data['hasFoulLanguage'] = None 
             app.logger.error("Moderation API Error", exc_info=True)
+        
+        DatabaseInterface().save_post(data)
         return data 
 
 
